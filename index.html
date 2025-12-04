@@ -3,228 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>心神不宁：构念分类任务</title>
+    <title>心神不宁：构念验证 V2.0</title>
     <style>
         :root {
-            --primary: #4a90e2;
-            --selected: #ff9f43;
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --text: #333;
-            --border: #dcdfe6;
+            /* 配色升级：更专业、柔和的心理学蓝 */
+            --primary: #5c8ae6;
+            --primary-dark: #406cc7;
+            --accent: #ff9f43;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --shadow: 0 8px 30px rgba(0,0,0,0.12);
+            --radius: 16px;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            background: var(--bg-gradient);
+            color: var(--text-main);
             margin: 0;
-            padding: 10px;
-            padding-bottom: 50px;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 600px; /* 限制最大宽度，手机上看更精致 */
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            min-height: 90vh;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            min-height: 80vh;
         }
 
-        h1 { font-size: 1.5rem; text-align: center; color: var(--primary); margin-bottom: 10px; }
-        p { line-height: 1.6; color: #555; }
+        h1 { font-size: 1.4rem; text-align: center; color: var(--primary); margin: 0 0 15px 0; font-weight: 700; }
+        p { line-height: 1.6; color: #555; font-size: 15px; margin-bottom: 20px; }
 
-        .step { display: none; flex: 1; flex-direction: column; }
+        .step { display: none; flex: 1; flex-direction: column; animation: fadeIn 0.4s ease; }
         .step.active { display: flex; }
 
-        /* 按钮通用样式 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 组件样式优化 --- */
+
+        /* 按钮 */
         .btn {
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 0;
+            padding: 14px;
             width: 100%;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: bold;
-            margin-top: 20px;
+            font-weight: 600;
+            margin-top: auto; /* 推到底部 */
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(92, 138, 230, 0.3);
+            transition: transform 0.1s, background 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
-        .btn:active { opacity: 0.9; transform: scale(0.98); }
-        .btn-copy { background-color: #27ae60; margin-bottom: 10px; }
+        .btn:active { transform: scale(0.98); background: var(--primary-dark); }
+        .btn-secondary { background: #e0e6ed; color: #555; box-shadow: none; margin-top: 10px; }
+        .btn-undo {
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 8px;
+            font-size: 14px;
+            margin-top: 10px;
+            width: auto;
+            align-self: center;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-undo:disabled { border-color: #ccc; color: #ccc; }
 
-        /* 阶段 1：输入 */
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .input-box { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 16px; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 2px dashed var(--border); border-radius: 8px; min-height: 80px; align-content: flex-start; }
-        .tag { background: #e3f2fd; color: var(--primary); padding: 5px 10px; border-radius: 15px; font-size: 14px; display: flex; align-items: center; }
-        .tag span { margin-left: 6px; font-weight: bold; padding: 0 4px; }
+        /* 输入框与标签 */
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .input-box { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; transition: border 0.3s; }
+        .input-box:focus { border-color: var(--primary); outline: none; }
 
-        /* 阶段 3：分类核心样式 (手机适配) */
-        .sorting-area { display: flex; flex-direction: column; height: 100%; }
+        .tag-container {
+            display: flex; flex-wrap: wrap; gap: 10px; padding: 15px;
+            background: #f8f9fa; border-radius: 12px; min-height: 100px;
+            align-content: flex-start; margin-bottom: 20px;
+        }
+        .tag {
+            background: #eef4ff; color: var(--primary);
+            padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500;
+            display: flex; align-items: center; gap: 6px;
+        }
 
-        /* 顶部固定待分类卡片区 */
-        .deck-container {
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            z-index: 100;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 10px;
-            text-align: center;
+        /* 阶段 3：分类交互优化 */
+        .deck-area {
+            background: white;
+            position: sticky; top: 0; z-index: 10;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 15px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .current-card {
             background: white;
             border: 2px solid var(--primary);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
-            font-size: 16px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(92, 138, 230, 0.15);
+            font-size: 17px;
             font-weight: 500;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            cursor: pointer;
+            text-align: center;
+            min-height: 80px;
+            width: 90%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .current-card.selected {
-            background-color: #fff8e1;
-            border-color: var(--selected);
-            transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(255, 159, 67, 0.4);
-        }
-        .instruction-tip { font-size: 12px; color: #999; margin-top: 5px; }
 
-        /* 底部桶区 */
         .buckets-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding-bottom: 20px;
-            flex: 1;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            padding-bottom: 10px; flex: 1; overflow-y: auto;
         }
 
         .bucket {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 5px;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            padding: 15px 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.1s;
             position: relative;
+            min-height: 90px;
         }
-        .bucket:active { background-color: #f0f0f0; }
-        .bucket h4 { margin: 0; font-size: 14px; color: #333; text-align: center; pointer-events: none; }
-        .bucket p { font-size: 10px; color: #888; margin: 2px 0 5px 0; text-align: center; pointer-events: none;}
-        .bucket-count {
-            background: var(--primary); color: white; border-radius: 10px;
-            padding: 2px 8px; font-size: 10px; margin-top: auto;
+        .bucket:active { background: #f5f7fa; transform: scale(0.97); }
+        .bucket h4 { margin: 0; font-size: 15px; color: #333; pointer-events: none; }
+        .bucket p { font-size: 11px; color: #888; margin: 4px 0 0 0; pointer-events: none; }
+
+        .bucket-badge {
+            position: absolute; top: 5px; right: 5px;
+            background: var(--primary); color: white;
+            font-size: 10px; padding: 2px 6px; border-radius: 10px;
+            opacity: 0; transition: opacity 0.2s;
         }
+        .bucket-badge.show { opacity: 1; }
 
-        /* 结果页 */
-        .json-box { width: 100%; height: 150px; border: 1px solid #ccc; font-size: 12px; padding: 5px; box-sizing: border-box; }
+        /* 进度条 */
+        .progress-container { width: 100%; background: #eee; height: 6px; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 25%; transition: width 0.5s ease; }
 
-        /* 简单的进度条 */
-        .progress-bar { height: 4px; background: #eee; width: 100%; margin-bottom: 15px; }
-        .progress-fill { height: 100%; background: var(--primary); width: 25%; transition: width 0.3s; }
+        /* 结果框 */
+        textarea { width: 100%; border: 2px solid #eee; border-radius: 10px; padding: 10px; font-family: monospace; font-size: 12px; resize: none; }
 
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-container"><div class="progress-fill" id="progress"></div></div>
 
     <div id="step1" class="step active">
         <h1>阶段一：直觉联想</h1>
-        <p>提到 <strong>“心神不宁”</strong>，你脑海中第一反应会出现哪些症状或感受？</p>
+        <p>当提到 <strong>“心神不宁”</strong> 这个词时，你脑海中第一时间会浮现出哪些症状、感受或画面？</p>
 
         <div class="input-group">
-            <input type="text" id="wordInput" class="input-box" placeholder="如：心慌、乱想...">
-            <button style="width: auto; margin:0; padding: 0 20px;" class="btn" onclick="addTag()">添加</button>
+            <input type="text" id="wordInput" class="input-box" placeholder="例如：心慌、乱想...">
+            <button style="width: auto; margin:0;" class="btn" onclick="addTag()">添加</button>
         </div>
 
-        <div class="tag-container" id="tagCloud"></div>
+        <div class="tag-container" id="tagCloud">
+            <span style="color:#999; width:100%; text-align:center; margin-top:10px;">(暂无标签，请添加)</span>
+        </div>
         <button class="btn" onclick="nextStep(2)">下一步</button>
     </div>
 
     <div id="step2" class="step">
-        <h1>阶段二：维度概览</h1>
-        <p>我们将“心神不宁”分为了以下 5 个方面，请您快速浏览：</p>
-        <ul style="padding-left: 20px; font-size: 14px; color: #444;">
-            <li><strong>① 情绪烦躁：</strong>易怒、坐立难安</li>
-            <li><strong>② 反复思虑：</strong>脑子停不下来、纠结</li>
-            <li><strong>③ 注意涣散：</strong>走神、难以集中</li>
-            <li><strong>④ 睡眠困扰：</strong>入睡难、多梦早醒</li>
-            <li><strong>⑤ 惊惕紧张：</strong>易受惊、心慌胸闷</li>
-        </ul>
-        <textarea id="dimensionComment" style="width:100%; padding:10px; box-sizing:border-box; border-radius:6px; border:1px solid #ccc;" placeholder="如有遗漏的重要方面，请在此补充..."></textarea>
-        <button class="btn" onclick="nextStep(3)">我已了解，开始分类</button>
+        <h1>阶段二：直觉匹配</h1>
+        <p>基于理论，我们将“心神不宁”拆解为以下 5 个维度。请阅读并判断：<strong>这些维度是否符合您想要表达的内容？</strong>（或者是否符合您的中医/心理学直觉？）</p>
+
+        <div style="background:#f8f9fa; border-radius:12px; padding:15px; margin-bottom:20px;">
+            <ul style="padding-left: 20px; margin:0; font-size: 14px; color: #444; line-height: 1.8;">
+                <li><strong>① 情绪烦躁：</strong>易怒、坐立难安</li>
+                <li><strong>② 反复思虑：</strong>脑子停不下来、纠结</li>
+                <li><strong>③ 注意涣散：</strong>走神、难以集中</li>
+                <li><strong>④ 睡眠困扰：</strong>入睡难、多梦早醒</li>
+                <li><strong>⑤ 惊惕紧张：</strong>易受惊、心慌胸闷</li>
+            </ul>
+        </div>
+
+        <p style="margin-bottom:10px; font-size:14px;"><strong>是否有遗漏？</strong> (若有，请补充；若无，请留空)</p>
+        <textarea id="dimensionComment" style="height:60px;" placeholder="我觉得还应该包含..."></textarea>
+
+        <button class="btn" onclick="nextStep(3)">确认，开始分类任务</button>
     </div>
 
     <div id="step3" class="step">
         <h1>阶段三：条目归类</h1>
 
-        <div class="deck-container">
-            <div id="cardDisplay" class="current-card selected" onclick="shakeCard()">
+        <div class="deck-area">
+            <div id="cardDisplay" class="current-card">
                 </div>
-            <div class="instruction-tip">👆 点击下方分类框，将上面这张卡片归类</div>
+            <button class="btn btn-undo" id="undoBtn" onclick="undoLastSort()" disabled>
+                ↩️ 撤销上一步
+            </button>
+            <div style="font-size: 12px; color: #aaa; margin-top: 8px;">点击下方色块进行归类</div>
         </div>
 
         <div class="buckets-grid">
             <div class="bucket" onclick="placeCard('E')">
-                <h4>情绪烦躁</h4><p>易怒/难安</p>
-                <span class="bucket-count" id="count-E">0</span>
+                <span class="bucket-badge" id="badge-E">0</span>
+                <h4 style="color:#e67e22">情绪烦躁</h4><p>易怒/难安</p>
             </div>
             <div class="bucket" onclick="placeCard('R')">
-                <h4>反复思虑</h4><p>纠结/停不下</p>
-                <span class="bucket-count" id="count-R">0</span>
+                <span class="bucket-badge" id="badge-R">0</span>
+                <h4 style="color:#9b59b6">过度思虑</h4><p>纠结/停不下</p>
             </div>
             <div class="bucket" onclick="placeCard('A')">
-                <h4>注意涣散</h4><p>走神/分心</p>
-                <span class="bucket-count" id="count-A">0</span>
+                <span class="bucket-badge" id="badge-A">0</span>
+                <h4 style="color:#3498db">注意控制下降</h4><p>走神/分心</p>
             </div>
             <div class="bucket" onclick="placeCard('SD')">
-                <h4>睡眠困扰</h4><p>失眠/多梦</p>
-                <span class="bucket-count" id="count-SD">0</span>
+                <span class="bucket-badge" id="badge-SD">0</span>
+                <h4 style="color:#2ecc71">睡眠困扰</h4><p>失眠/多梦</p>
             </div>
             <div class="bucket" onclick="placeCard('SH')">
-                <h4>惊惕紧张</h4><p>心慌/易惊</p>
-                <span class="bucket-count" id="count-SH">0</span>
+                <span class="bucket-badge" id="badge-SH">0</span>
+                <h4 style="color:#e74c3c">躯体高唤醒</h4><p>心慌/易惊</p>
             </div>
-            <div class="bucket" style="background:#fff0f0; border-color:#ffcccc;" onclick="placeCard('Trash')">
-                <h4 style="color:#c0392b">不确定/垃圾桶</h4>
-                <span class="bucket-count" style="background:#e74c3c" id="count-Trash">0</span>
+            <div class="bucket" style="background:#f2f2f2; border-color:#ccc;" onclick="placeCard('Trash')">
+                <span class="bucket-badge" style="background:#999" id="badge-Trash">0</span>
+                <h4 style="color:#7f8c8d">不确定/跳过</h4>
             </div>
         </div>
     </div>
 
     <div id="step4" class="step">
-        <h1>✅ 完成！</h1>
-        <p>感谢您的帮助。请点击下方绿色按钮复制数据，发送给研究者。</p>
+        <h1>🎉 感谢您的参与！</h1>
+        <p>您的分类数据对我们非常重要。请点击下方按钮复制数据，发送给研究者。</p>
 
-        <button class="btn btn-copy" onclick="copyToClipboard()">📋 一键复制结果</button>
-        <button class="btn btn-outline" style="background:#fff; color:#666; border:1px solid #ccc; font-weight:normal;" onclick="downloadData()">备用：下载文件</button>
+        <button class="btn" style="background:#27ae60; margin-bottom:15px;" onclick="copyToClipboard()">📋 一键复制数据</button>
+        <button class="btn btn-secondary" onclick="downloadData()">备用：下载文件</button>
 
-        <p style="font-size: 12px; margin-top: 10px;">数据预览：</p>
+        <p style="font-size: 12px; margin-top: 15px; color:#999;">数据预览 (已加密个人信息)：</p>
         <textarea class="json-box" id="resultOutput" readonly></textarea>
     </div>
 </div>
 
 <script>
-    // 您的 25 个精选条目 (已更新为 5 维结构)
+    // --- 数据源 (25题) ---
     const rawItems = [
         { id: "E1", content: "我常常感到莫名其妙的烦躁，看什么都不顺眼。", target: "E" },
         { id: "E2", content: "我比平时更容易因为小事生气。", target: "E" },
@@ -256,11 +290,12 @@
     ];
 
     let userTags = [];
-    let sortResults = [];
+    let sortResults = []; // 记录操作历史
     let shuffledDeck = [];
     let bucketCounts = { E:0, R:0, A:0, SD:0, SH:0, Trash:0 };
 
     window.onload = function() {
+        // 初始化打乱
         shuffledDeck = [...rawItems].sort(() => Math.random() - 0.5);
         updateProgress(1);
     };
@@ -268,36 +303,44 @@
     // --- 阶段 1 ---
     function addTag() {
         const input = document.getElementById("wordInput");
-        if (input.value.trim()) {
-            userTags.push(input.value.trim());
-            renderTags();
+        const val = input.value.trim();
+        if (val) {
+            userTags.push(val);
+            const container = document.getElementById("tagCloud");
+            if (userTags.length === 1) container.innerHTML = ""; // 清除提示
+            container.innerHTML += `<div class="tag">${val}</div>`;
             input.value = "";
             input.focus();
         }
-    }
-    function renderTags() {
-        document.getElementById("tagCloud").innerHTML = userTags.map((t,i) =>
-            `<div class="tag">${t}<span onclick="userTags.splice(${i},1);renderTags()">×</span></div>`
-        ).join("");
     }
 
     // --- 阶段 3 核心交互 ---
     function renderCard() {
         const cardDiv = document.getElementById("cardDisplay");
+        const undoBtn = document.getElementById("undoBtn");
+
+        // 更新撤销按钮状态
+        undoBtn.disabled = sortResults.length === 0;
+        undoBtn.style.opacity = sortResults.length === 0 ? 0.5 : 1;
+
         if (shuffledDeck.length === 0) {
             nextStep(4);
             return;
         }
-        const item = shuffledDeck[0];
-        cardDiv.innerHTML = `<div style="text-align:center"><div style="font-size:12px;color:#999;margin-bottom:5px">剩余 ${shuffledDeck.length} 题</div>${item.content}</div>`;
 
-        // 简单的进入动画
-        cardDiv.style.opacity = 0;
-        cardDiv.style.transform = "scale(0.9)";
-        setTimeout(() => {
-            cardDiv.style.opacity = 1;
-            cardDiv.style.transform = "scale(1)";
-        }, 50);
+        const item = shuffledDeck[0];
+        const remaining = shuffledDeck.length;
+
+        cardDiv.innerHTML = `
+            <div style="width:100%">
+                <div style="font-size:12px;color:#999;margin-bottom:8px;text-align:right">剩余 ${remaining} 题</div>
+                <div style="font-size:16px;line-height:1.5">${item.content}</div>
+            </div>
+        `;
+
+        // 刷新动画
+        cardDiv.style.transform = "scale(0.98)";
+        setTimeout(() => cardDiv.style.transform = "scale(1)", 100);
     }
 
     function placeCard(bucketId) {
@@ -305,27 +348,50 @@
 
         const currentItem = shuffledDeck[0];
 
-        // 记录数据
+        // 1. 记录到历史结果
         sortResults.push({
             id: currentItem.id,
+            content: currentItem.content,
             bucket: bucketId,
+            target: currentItem.target,
             correct: currentItem.target === bucketId
         });
 
-        // 更新计数UI
+        // 2. 更新计数
         bucketCounts[bucketId]++;
-        document.getElementById(`count-${bucketId}`).innerText = bucketCounts[bucketId];
+        updateBadge(bucketId);
 
-        // 移除旧卡片
+        // 3. 移除当前卡片
         shuffledDeck.shift();
+
+        // 4. 渲染下一张
         renderCard();
     }
 
-    function shakeCard() {
-        const card = document.getElementById("cardDisplay");
-        card.style.transform = "translateX(5px)";
-        setTimeout(() => card.style.transform = "translateX(-5px)", 50);
-        setTimeout(() => card.style.transform = "translateX(0)", 100);
+    // --- 撤销功能 (新增) ---
+    function undoLastSort() {
+        if (sortResults.length === 0) return;
+
+        // 1. 取出最后一次操作
+        const lastAction = sortResults.pop();
+
+        // 2. 恢复计数
+        bucketCounts[lastAction.bucket]--;
+        updateBadge(lastAction.bucket);
+
+        // 3. 将该题放回牌堆顶部
+        const itemToRestore = rawItems.find(i => i.id === lastAction.id);
+        shuffledDeck.unshift(itemToRestore);
+
+        // 4. 重新渲染
+        renderCard();
+    }
+
+    function updateBadge(id) {
+        const badge = document.getElementById(`badge-${id}`);
+        badge.innerText = bucketCounts[id];
+        badge.classList.add("show");
+        if(bucketCounts[id] === 0) badge.classList.remove("show");
     }
 
     // --- 导航与结果 ---
@@ -340,9 +406,9 @@
 
     function generateResult() {
         const data = {
-            tags: userTags,
-            comment: document.getElementById("dimensionComment").value,
-            results: sortResults,
+            phase1_tags: userTags,
+            phase2_comment: document.getElementById("dimensionComment").value,
+            phase3_data: sortResults.map(r => ({ id: r.id, bucket: r.bucket, correct: r.correct })),
             accuracy: Math.round((sortResults.filter(r=>r.correct).length / sortResults.length)*100) + "%"
         };
         document.getElementById("resultOutput").value = JSON.stringify(data);
@@ -353,7 +419,9 @@
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyText.value).then(() => {
-            alert("已复制！请去微信粘贴给同学。");
+            alert("✅ 复制成功！\n请去微信粘贴给同学。");
+        }).catch(() => {
+            alert("复制失败，请手动全选文本框内容复制。");
         });
     }
 
@@ -362,7 +430,7 @@
         const blob = new Blob([text], { type: "text/plain" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `Result_${new Date().getTime()}.txt`;
+        a.download = `MRS_Data_${new Date().getTime()}.txt`;
         a.click();
     }
 </script>
