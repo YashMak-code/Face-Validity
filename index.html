@@ -260,33 +260,32 @@
 <script>
     // --- 数据源 (25题) ---
     const rawItems = [
-        { id: "E1", content: "我常常感到莫名其妙的烦躁，看什么都不顺眼。", target: "E" },
+        { id: "E1", content: "我常常感到心里有莫名的烦躁。", target: "E" },
         { id: "E2", content: "我比平时更容易因为小事生气。", target: "E" },
         { id: "E3", content: "我经常感到紧张，好像总有不好的事情要发生。", target: "E" },
         { id: "E4", content: "即使周围没有什么大事，我也感到坐立难安，无法放松。", target: "E" },
-        { id: "E6", content: "一旦环境或计划有一点变化，我就会感到烦躁。", target: "E" },
-        { id: "E9", content: "我对周围的声音或干扰感到特别不耐烦。", target: "E" },
+        { id: "E5", content: "一旦环境或计划有一点变化，我就会感到烦躁。", target: "E" },
+        { id: "E6", content: "我对周围的声音或干扰感到特别不耐烦。", target: "E" },
 
-        { id: "C1", content: "我常常止不住地反复想着同一件烦心事。", target: "R" },
-        { id: "C4", content: "即使我想停止思考某些事，脑子还是会不由自主地继续转动。", target: "R" },
-        { id: "C5", content: "我经常一遍又一遍地回想自己过去做错或没做好的事。", target: "R" },
-        { id: "C7", content: "做决定时，我常常在心里来回权衡很久，犹豫不决。", target: "R" },
-        { id: "C8", content: "我感觉脑子乱乱的，像一团浆糊，理不清头绪。", target: "R" },
+        { id: "R1", content: "我常常止不住地反复想着同一件烦心事。", target: "R" },
+        { id: "R2", content: "做决定时，我常常在心里来回权衡很久，犹豫不决。", target: "R" },
+        { id: "R3", content: "即使我想停止思考某些事，脑子还是会不由自主地继续转动。", target: "R" },
+        { id: "R4", content: "我经常一遍又一遍地回想自己过去做错或没做好的事。", target: "R" },
 
+        { id: "A1", content: "我发现自己发呆、恍惚的时间比以前多了。", target: "A" },
         { id: "A2", content: "即使在做事情时，我的心思也总是飘到别的事情上。", target: "A" },
         { id: "A3", content: "我很难把注意力持续地集中在手头的任务上。", target: "A" },
-        { id: "A1", content: "我发现自己发呆、恍惚的时间比以前多了。", target: "A" },
         { id: "A4", content: "我感觉记忆力好像变差了，刚做的事转头就忘。", target: "A" },
+        { id: "A5", content: "我感觉脑子乱乱的，像一团浆糊，理不清头绪。", target: "A" },
 
-        { id: "S1", content: "我入睡困难，躺在床上需要很长时间才能睡着。", target: "SD" },
-        { id: "S2", content: "我睡眠很浅，或者多梦，夜里容易醒来。", target: "SD" },
-        { id: "S3", content: "我会比预期更早醒来，之后很难再睡着。", target: "SD" },
-        { id: "S9", content: "我睡觉时总觉得脑子里像在“放电影”，导致无法入睡。", target: "SD" },
+        { id: "SD1", content: "我入睡困难，躺在床上需要很长时间才能睡着。", target: "SD" },
+        { id: "SD2", content: "我睡眠很浅，或者多梦，夜里容易醒来。", target: "SD" },
+        { id: "SD3", content: "我会比预期更早醒来，之后很难再睡着。", target: "SD" },
+        { id: "SD4", content: "醒来时我常常感觉没有休息好，身体很疲乏。", target: "SD" },
 
-        { id: "S5", content: "在没有剧烈运动的情况下，我也能感觉到心跳加快或心慌。", target: "SH" },
-        { id: "S6", content: "我容易被一些突然的小声音或动作吓一跳。", target: "SH" },
-        { id: "S7", content: "即使身体很累，我仍觉得大脑处于兴奋状态，停不下来。", target: "SH" },
-        { id: "S8", content: "我感到胸闷，或者需要做深呼吸才舒服。", target: "SH" }
+        { id: "SH1", content: "我容易被一些突然的小声音或动作吓一跳。", target: "SH" },
+        { id: "SH2", content: "我感到胸闷，或者需要做深呼吸才舒服。", target: "SH" },
+        { id: "SH3", content: "在没有剧烈运动的情况下，我也能感觉到心跳加快或心慌。", target: "SH" },
     ];
 
     let userTags = [];
