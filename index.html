@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>心神不宁：构念验证 V2.0</title>
+    <title>心神不宁：构念与探针验证 V3.0</title>
     <style>
         :root {
             /* 配色升级：更专业、柔和的心理学蓝 */
@@ -33,7 +33,7 @@
 
         .container {
             width: 100%;
-            max-width: 600px; /* 限制最大宽度，手机上看更精致 */
+            max-width: 600px;
             background: var(--card-bg);
             padding: 25px;
             border-radius: var(--radius);
@@ -43,7 +43,7 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            min-height: 80vh;
+            min-height: 85vh;
         }
 
         h1 { font-size: 1.4rem; text-align: center; color: var(--primary); margin: 0 0 15px 0; font-weight: 700; }
@@ -54,9 +54,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 组件样式优化 --- */
-
-        /* 按钮 */
+        /* --- 按钮 --- */
         .btn {
             background: var(--primary);
             color: white;
@@ -66,7 +64,7 @@
             border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
-            margin-top: auto; /* 推到底部 */
+            margin-top: auto;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(92, 138, 230, 0.3);
             transition: transform 0.1s, background 0.2s;
@@ -74,6 +72,7 @@
         }
         .btn:active { transform: scale(0.98); background: var(--primary-dark); }
         .btn-secondary { background: #e0e6ed; color: #555; box-shadow: none; margin-top: 10px; }
+
         .btn-undo {
             background: transparent;
             color: #e74c3c;
@@ -84,10 +83,11 @@
             width: auto;
             align-self: center;
             display: flex; align-items: center; gap: 5px;
+            border-radius: 20px;
         }
         .btn-undo:disabled { border-color: #ccc; color: #ccc; }
 
-        /* 输入框与标签 */
+        /* --- 输入框与标签 --- */
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .input-box { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; transition: border 0.3s; }
         .input-box:focus { border-color: var(--primary); outline: none; }
@@ -103,7 +103,7 @@
             display: flex; align-items: center; gap: 6px;
         }
 
-        /* 阶段 3：分类交互优化 */
+        /* --- 阶段 3：分类交互 --- */
         .deck-area {
             background: white;
             position: sticky; top: 0; z-index: 10;
@@ -125,7 +125,14 @@
             min-height: 80px;
             width: 90%;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s;
+        }
+
+        .probe-tag {
+            background: #ff9f43; color: white;
+            font-size: 10px; padding: 2px 6px; border-radius: 4px;
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .buckets-grid {
@@ -156,11 +163,10 @@
         }
         .bucket-badge.show { opacity: 1; }
 
-        /* 进度条 */
+        /* --- 进度条与结果 --- */
         .progress-container { width: 100%; background: #eee; height: 6px; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--primary); width: 25%; transition: width 0.5s ease; }
 
-        /* 结果框 */
         textarea { width: 100%; border: 2px solid #eee; border-radius: 10px; padding: 10px; font-family: monospace; font-size: 12px; resize: none; }
 
     </style>
@@ -187,15 +193,15 @@
 
     <div id="step2" class="step">
         <h1>阶段二：直觉匹配</h1>
-        <p>基于理论，我们将“心神不宁”拆解为以下 5 个维度。请阅读并判断：<strong>这些维度是否符合您想要表达的内容？</strong>（或者是否符合您的中医/心理学直觉？）</p>
+        <p>基于理论，我们将“心神不宁”拆解为以下 5 个维度。请阅读并判断：<strong>这些维度是否符合您想要表达的内容？</strong></p>
 
         <div style="background:#f8f9fa; border-radius:12px; padding:15px; margin-bottom:20px;">
             <ul style="padding-left: 20px; margin:0; font-size: 14px; color: #444; line-height: 1.8;">
-                <li><strong>① 情绪烦躁：</strong>易怒、坐立难安</li>
-                <li><strong>② 过度思虑：</strong>脑子停不下来、纠结</li>
-                <li><strong>③ 注意控制下降：</strong>走神、难以集中</li>
-                <li><strong>④ 睡眠困扰：</strong>入睡难、多梦早醒</li>
-                <li><strong>⑤ 躯体高唤醒：</strong>易受惊、心慌胸闷</li>
+                <li><strong>① 情绪烦躁：</strong>心里烦乱、易怒</li>
+                <li><strong>② 过度思虑：</strong>反复担忧、脑子停不下来</li>
+                <li><strong>③ 注意控制下降：</strong>走神、脑子空白</li>
+                <li><strong>④ 睡眠困扰：</strong>翻来覆去、多梦早醒</li>
+                <li><strong>⑤ 躯体高唤醒：</strong>心慌、易惊、坐立难安</li>
             </ul>
         </div>
 
@@ -214,21 +220,21 @@
             <button class="btn btn-undo" id="undoBtn" onclick="undoLastSort()" disabled>
                 ↩️ 撤销上一步
             </button>
-            <div style="font-size: 12px; color: #aaa; margin-top: 8px;">点击下方色块进行归类</div>
+            <div style="font-size: 12px; color: #aaa; margin-top: 8px;">包含主量表题目与短探针，请凭直觉归类</div>
         </div>
 
         <div class="buckets-grid">
             <div class="bucket" onclick="placeCard('E')">
                 <span class="bucket-badge" id="badge-E">0</span>
-                <h4 style="color:#e67e22">情绪烦躁</h4><p>易怒/难安</p>
+                <h4 style="color:#e67e22">情绪烦躁</h4><p>烦乱/易怒</p>
             </div>
             <div class="bucket" onclick="placeCard('R')">
                 <span class="bucket-badge" id="badge-R">0</span>
-                <h4 style="color:#9b59b6">过度思虑</h4><p>纠结/停不下</p>
+                <h4 style="color:#9b59b6">过度思虑</h4><p>担忧/停不下</p>
             </div>
             <div class="bucket" onclick="placeCard('A')">
                 <span class="bucket-badge" id="badge-A">0</span>
-                <h4 style="color:#3498db">注意控制下降</h4><p>走神/分心</p>
+                <h4 style="color:#3498db">注意控制下降</h4><p>走神/空白</p>
             </div>
             <div class="bucket" onclick="placeCard('SD')">
                 <span class="bucket-badge" id="badge-SD">0</span>
@@ -258,67 +264,75 @@
 </div>
 
 <script>
-    // --- 数据源 (25题) ---
+    // --- V3.0 数据源：全量更新 ---
     const rawItems = [
-        { id: "E1", content: "我常常感到心里有莫名的烦躁。", target: "E" },
-        { id: "E2", content: "我比平时更容易因为小事生气。", target: "E" },
-        { id: "E3", content: "我经常感到紧张，好像总有不好的事情要发生。", target: "E" },
-        { id: "E4", content: "即使周围没有什么大事，我也感到坐立难安，无法放松。", target: "E" },
-        { id: "E5", content: "一旦环境或计划有一点变化，我就会感到烦躁。", target: "E" },
-        { id: "E6", content: "我对周围的声音或干扰感到特别不耐烦。", target: "E" },
+        // === 主量表条目 (MRS) ===
+        { id: "E1", content: "我经常感到心里烦乱，难以安静下来。", target: "E" },
+        { id: "E2", content: "我容易因为一些小事而生气或发脾气。", target: "E" },
+        { id: "E3", content: "当环境或计划出现变化时，我会感到烦躁。", target: "E" },
+        { id: "E4", content: "周围的声音或他人干扰会让我不耐烦。", target: "E" },
 
-        { id: "R1", content: "我常常止不住地反复想着同一件烦心事。", target: "R" },
-        { id: "R2", content: "做决定时，我常常在心里来回权衡很久，犹豫不决。", target: "R" },
-        { id: "R3", content: "即使我想停止思考某些事，脑子还是会不由自主地继续转动。", target: "R" },
-        { id: "R4", content: "我经常一遍又一遍地回想自己过去做错或没做好的事。", target: "R" },
+        { id: "R1", content: "我会反复想着最近发生的、让我不安或烦心的事。", target: "R" },
+        { id: "R2", content: "我会反复担忧接下来要面对的事或还没处理完的事，心里放不下。", target: "R" },
+        { id: "R3", content: "即使我不想再想某些事，这些念头也会反复冒出来。", target: "R" },
+        { id: "R4", content: "当这些念头出现时，我很难把注意力从它们上面转开。", target: "R" },
 
-        { id: "A1", content: "我发现自己发呆、恍惚的时间比以前多了。", target: "A" },
-        { id: "A2", content: "即使在做事情时，我的心思也总是飘到别的事情上。", target: "A" },
-        { id: "A3", content: "我很难把注意力持续地集中在手头的任务上。", target: "A" },
-        { id: "A4", content: "我感觉记忆力好像变差了，刚做的事转头就忘。", target: "A" },
-        { id: "A5", content: "我感觉脑子乱乱的，像一团浆糊，理不清头绪。", target: "A" },
+        { id: "A1", content: "我经常会忽然脑子陷入一片空白，一时回不过神。", target: "A" },
+        { id: "A2", content: "做事时，我的思绪总是不受控制地“跑”到别的地方去。", target: "A" },
+        { id: "A3", content: "我感到很难长时间维持专注。", target: "A" },
+        { id: "A4", content: "我常会忘记自己刚要做什么/刚在做什么。", target: "A" },
+        { id: "A5", content: "我感觉脑子和思路很乱，理不清头绪。", target: "A" },
 
-        { id: "SD1", content: "我入睡困难，躺在床上需要很长时间才能睡着。", target: "SD" },
-        { id: "SD2", content: "我睡眠很浅，或者多梦，夜里容易醒来。", target: "SD" },
-        { id: "SD3", content: "我会比预期更早醒来，之后很难再睡着。", target: "SD" },
-        { id: "SD4", content: "醒来时我常常感觉没有休息好，身体很疲乏。", target: "SD" },
+        { id: "SD1", content: "我躺在床上翻来覆去，脑子静不下来，很久才能入睡。", target: "SD" },
+        { id: "SD2", content: "我睡觉时的梦很多、很乱。", target: "SD" },
+        { id: "SD3", content: "我夜里睡得不安稳，容易醒来。", target: "SD" },
+        { id: "SD4", content: "醒来时，我感觉脑子还是很沉，像没有休息过一样。", target: "SD" },
 
-        { id: "SH1", content: "我容易被一些突然的小声音或动作吓一跳。", target: "SH" },
-        { id: "SH2", content: "我感到胸闷，或者需要做深呼吸才舒服。", target: "SH" },
-        { id: "SH3", content: "在没有剧烈运动的情况下，我也能感觉到心跳加快或心慌。", target: "SH" },
+        { id: "SH1", content: "即使没有剧烈运动，我也会感觉到心跳加快或心慌。", target: "SH" },
+        { id: "SH2", content: "我容易被一些突然的小声音或动作吓一跳。", target: "SH" },
+        { id: "SH3", content: "我常感到胸口紧紧的，像是“憋着一口气”，难以放松。", target: "SH" },
+        { id: "SH4", content: "我常常感到坐立难安，难以放松。", target: "SH" },
+
+        // === 探针条目 (MRS-P) ===
+        { id: "EP1", content: "【探针】此时此刻，我感到心里很烦，难以安宁。", target: "E", isProbe: true },
+        { id: "EP2", content: "【探针】此时此刻，我感到躁动不安，一点就着。", target: "E", isProbe: true },
+        { id: "RP1", content: "【探针】此时此刻，我的脑子停不下来，念头不断。", target: "R", isProbe: true },
+        { id: "RP2", content: "【探针】此时此刻，我控制不住地在反复想事情。", target: "R", isProbe: true },
+        { id: "AP1", content: "【探针】此时此刻，我的注意力难以集中。", target: "A", isProbe: true },
+        { id: "AP2", content: "【探针】此时此刻，我很难把注意力从无关的想法上拉回来。", target: "A", isProbe: true },
+        { id: "SDP1", content: "【探针】此时此刻，我感觉脑子转不动了，但又静不下来。", target: "SD", isProbe: true },
+        { id: "SDP2", content: "【探针】此时此刻，我感觉身体很疲惫，但很难彻底放松。", target: "SD", isProbe: true },
+        { id: "SHP1", content: "【探针】此时此刻，我感觉胸口发紧，呼吸不太顺畅。", target: "SH", isProbe: true },
+        { id: "SHP2", content: "【探针】此时此刻，我能感觉到心跳更明显或心慌。", target: "SH", isProbe: true }
     ];
 
     let userTags = [];
-    let sortResults = []; // 记录操作历史
+    let sortResults = [];
     let shuffledDeck = [];
     let bucketCounts = { E:0, R:0, A:0, SD:0, SH:0, Trash:0 };
 
     window.onload = function() {
-        // 初始化打乱
         shuffledDeck = [...rawItems].sort(() => Math.random() - 0.5);
         updateProgress(1);
     };
 
-    // --- 阶段 1 ---
     function addTag() {
         const input = document.getElementById("wordInput");
         const val = input.value.trim();
         if (val) {
             userTags.push(val);
             const container = document.getElementById("tagCloud");
-            if (userTags.length === 1) container.innerHTML = ""; // 清除提示
+            if (userTags.length === 1) container.innerHTML = "";
             container.innerHTML += `<div class="tag">${val}</div>`;
             input.value = "";
             input.focus();
         }
     }
 
-    // --- 阶段 3 核心交互 ---
     function renderCard() {
         const cardDiv = document.getElementById("cardDisplay");
         const undoBtn = document.getElementById("undoBtn");
 
-        // 更新撤销按钮状态
         undoBtn.disabled = sortResults.length === 0;
         undoBtn.style.opacity = sortResults.length === 0 ? 0.5 : 1;
 
@@ -330,59 +344,47 @@
         const item = shuffledDeck[0];
         const remaining = shuffledDeck.length;
 
+        // 探针特殊样式标记
+        const probeBadge = item.isProbe ? `<div class="probe-tag">短探针</div>` : '';
+        const cardStyle = item.isProbe ? "border-color: #ff9f43;" : "";
+
         cardDiv.innerHTML = `
-            <div style="width:100%">
+            <div style="width:100%; position:relative;">
+                ${probeBadge}
                 <div style="font-size:12px;color:#999;margin-bottom:8px;text-align:right">剩余 ${remaining} 题</div>
-                <div style="font-size:16px;line-height:1.5">${item.content}</div>
+                <div style="font-size:16px;line-height:1.5;">${item.content.replace("【探针】", "")}</div>
             </div>
         `;
+        cardDiv.style.borderColor = item.isProbe ? "#ff9f43" : "#5c8ae6";
 
-        // 刷新动画
         cardDiv.style.transform = "scale(0.98)";
         setTimeout(() => cardDiv.style.transform = "scale(1)", 100);
     }
 
     function placeCard(bucketId) {
         if (shuffledDeck.length === 0) return;
-
         const currentItem = shuffledDeck[0];
-
-        // 1. 记录到历史结果
         sortResults.push({
             id: currentItem.id,
             content: currentItem.content,
             bucket: bucketId,
             target: currentItem.target,
-            correct: currentItem.target === bucketId
+            correct: currentItem.target === bucketId,
+            isProbe: !!currentItem.isProbe
         });
-
-        // 2. 更新计数
         bucketCounts[bucketId]++;
         updateBadge(bucketId);
-
-        // 3. 移除当前卡片
         shuffledDeck.shift();
-
-        // 4. 渲染下一张
         renderCard();
     }
 
-    // --- 撤销功能 (新增) ---
     function undoLastSort() {
         if (sortResults.length === 0) return;
-
-        // 1. 取出最后一次操作
         const lastAction = sortResults.pop();
-
-        // 2. 恢复计数
         bucketCounts[lastAction.bucket]--;
         updateBadge(lastAction.bucket);
-
-        // 3. 将该题放回牌堆顶部
         const itemToRestore = rawItems.find(i => i.id === lastAction.id);
         shuffledDeck.unshift(itemToRestore);
-
-        // 4. 重新渲染
         renderCard();
     }
 
@@ -393,22 +395,27 @@
         if(bucketCounts[id] === 0) badge.classList.remove("show");
     }
 
-    // --- 导航与结果 ---
     function nextStep(step) {
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById(`step${step}`).classList.add('active');
         document.getElementById('progress').style.width = (step/4)*100 + "%";
-
         if (step === 3) renderCard();
         if (step === 4) generateResult();
     }
 
     function generateResult() {
+        // 计算探针正确率
+        const probes = sortResults.filter(r => r.isProbe);
+        const mainItems = sortResults.filter(r => !r.isProbe);
+
         const data = {
             phase1_tags: userTags,
             phase2_comment: document.getElementById("dimensionComment").value,
-            phase3_data: sortResults.map(r => ({ id: r.id, bucket: r.bucket, correct: r.correct })),
-            accuracy: Math.round((sortResults.filter(r=>r.correct).length / sortResults.length)*100) + "%"
+            stats: {
+                main_accuracy: Math.round((mainItems.filter(r=>r.correct).length / Math.max(1, mainItems.length))*100) + "%",
+                probe_accuracy: Math.round((probes.filter(r=>r.correct).length / Math.max(1, probes.length))*100) + "%"
+            },
+            details: sortResults.map(r => ({ id: r.id, bucket: r.bucket, correct: r.correct, isProbe: r.isProbe }))
         };
         document.getElementById("resultOutput").value = JSON.stringify(data);
     }
@@ -429,7 +436,7 @@
         const blob = new Blob([text], { type: "text/plain" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `MRS_Data_${new Date().getTime()}.txt`;
+        a.download = `MRS_V3_Data_${new Date().getTime()}.txt`;
         a.click();
     }
 </script>
